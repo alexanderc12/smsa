@@ -1,0 +1,189 @@
+{% extends "adminLayout.html" %} {% block content %}
+<head>
+    <script src="/js/angular/coachController.js"></script>
+    <link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.css" rel="stylesheet">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.js"></script>
+</head>
+<div data-ng-controller="CoachController as coach">
+    <table class="table">
+        <caption>Arbitros asignados:</caption>
+        <div class="alert alert-success alert-dismissible" data-ng-show="coach.showSuccessReportAlert" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            El reporte de seguimiento ha sido registrado con exito :)
+        </div>
+        <div class="alert alert-success alert-dismissible" data-ng-show="coach.showSuccessTaskAlert" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            La tarea ha sido registrada con exito :)
+        </div>
+        <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Pais</th>
+            <th>Registrar seguimiento</th>
+            <th>Asignar tarea</th>
+            <th>Ver ficha</th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr data-ng-repeat="referee in coach.referees">
+                <td>[[referee.name]] [[referee.lastName]]</td>
+                <td>[[referee.country]]</td>
+                <td><a type="button" class="btn btn-info btn-xs" data-ng-click="coach.showModalAddReport([[referee._id]])">
+                    <span class="glyphicon glyphicon-stats" aria-hidden="true"></span></a>
+                </td>
+                <td><a type="button" class="btn btn-info btn-xs" data-ng-click="coach.showModalAddTask([[referee._id]])">
+                    <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></a>
+                </td>
+                <td><a type="button" class="btn btn-info btn-xs" data-ng-click="coach.showModalViewProfile([[referee._id]])">
+                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span></a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <form name="reportForm" class="form-horizontal" novalidate>
+        <div class="modal fade" tabindex="-1" role="dialog" id="modalAddReport">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Nuevo seguimiento</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="container-fluid">
+                            <div class="form-group">
+                                <label>Fecha:</label>
+                                <input type="date" data-ng-model="coach.report.date" class="form-control" >
+                            </div>
+                            <div class="form-group">
+                                <label>Peso(Kg):</label>
+                                <input type="number" data-ng-model="coach.report.weight" class="form-control" placeholder="peso actual">
+                            </div>
+                            <div class="form-group">
+                                <label>Detalles:</label>
+                                <textarea data-ng-model="coach.report.details" class="form-control" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Concepto:</label>
+                                <select class="form-control"  ng-model="coach.report.concept">
+                                    <option value="Excelente">Excelente</option>
+                                    <option value="Bueno">Bueno</option>
+                                    <option value="Regular">Regular</option>
+                                    <option value="Insuficiente">Insuficiente</option>
+                                    <option value="Deficiente">Deficiente</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" data-ng-click="coach.addReport()">Agregar seguimiento</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <form name="taskForm" class="form-horizontal" novalidate>
+        <div class="modal fade" tabindex="-1" role="dialog" id="modalAddTask">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Nueva tarea</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="container-fluid">
+                            <div class="form-group">
+                                <label>Fecha:</label>
+                                <input type="date" data-ng-model="coach.task.date" class="form-control" >
+                            </div>
+                            <div class="form-group">
+                                <label>Detalles:</label>
+                                <div id="summernote">Hello Summernote</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" data-ng-click="coach.addTask()">Agregar tarea</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="modal fade" tabindex="-1" role="dialog" id="modalProfile">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Perfil de [[coach.profile.referee.name ]] [[coach.profile.referee.lastName]]</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+
+                        <div class="media">
+                            <div class="media-left media-middle">
+                                <img class="media-object" ng-src=[[coach.profile.referee.photo]] alt="...">
+                            </div>
+                            <div class="media-body">
+                                <ul class="list-group">
+                                    <li class="list-group-item">Nombres: [[coach.profile.referee.name ]]</li>
+                                    <li class="list-group-item">Apellidos: [[coach.profile.referee.lastName ]]</li>
+                                    <li class="list-group-item">Fecha de nacimiento: [[coach.formatDate(coach.profile.referee.bornDate) ]]</li>
+                                    <li class="list-group-item">Pais: [[coach.profile.referee.country ]]</li>
+                                    <li class="list-group-item">Altura: [[coach.profile.referee.height ]] cm</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Tareas asignadas:</h3>
+                            </div>
+                            <div class="panel-body">
+                                <ul class="list-group">
+                                    <li class="list-group-item" data-ng-repeat="task in coach.profile.tasks">
+                                        <span class="badge">14</span>
+                                        <strong>[[coach.formatDate(task.date)]]</strong>
+                                        <div style="height: 100px;max-height: 100px;overflow-y: scroll;" ng-bind-html="formatHtml(task.details)"></div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Reportes de seguimiento:</h3>
+                            </div>
+                            <div class="panel-body">
+                                <ul class="list-group">
+                                    <li class="list-group-item" data-ng-repeat="report in coach.profile.reports">
+                                        <div class="media">
+                                            <div class="media-body">
+                                                <strong>[[coach.formatDate(report.date)]]</strong>
+                                                <p>[[report.details]]</p>
+                                            </div>
+                                            <div class="media-right">
+                                                <h3><span ng-class="{'label-primary': [[report.concept === 'Excelente']],
+                                                'label-success': [[report.concept === 'Bueno']],
+                                                'label-info': [[report.concept === 'Regular']],
+                                                'label-warning': [[report.concept === 'Insuficiente']],
+                                                'label-danger': [[report.concept === 'Deficiente']]}" class="label">[[report.concept]]</span></h3>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

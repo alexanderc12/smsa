@@ -1,0 +1,67 @@
+{% extends "userLayout.html" %} {% block content %}
+<div class="media">
+    <div class="media-left media-middle">
+        <img class="media-object" ng-src=[[referee.profile.referee.photo]] alt="...">
+    </div>
+    <div class="media-body">
+        <ul class="list-group">
+            <li class="list-group-item">Nombres: [[referee.profile.referee.name ]]</li>
+            <li class="list-group-item">Apellidos: [[referee.profile.referee.lastName ]]</li>
+            <li class="list-group-item">Fecha de nacimiento: [[referee.formatDate(coach.profile.referee.bornDate) ]]</li>
+            <li class="list-group-item">Pais: [[referee.profile.referee.country ]]</li>
+            <li class="list-group-item">Altura: [[referee.profile.referee.height ]] cm</li>
+        </ul>
+    </div>
+</div>
+<div>
+    <h3>Estadisticas:</h3>
+    <div class="row">
+        <div class="col-md-6">
+            <canvas id="myChart" width="400" height="400"></canvas>
+        </div>
+        <div class="col-md-6">
+            <canvas id="myChart2" width="400" height="400"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <h3 class="panel-title">Tareas asignadas:</h3>
+    </div>
+    <div class="panel-body">
+        <ul class="list-group">
+            <li class="list-group-item" data-ng-repeat="task in referee.profile.tasks">
+                <span class="badge">14</span>
+                <strong>[[referee.formatDate(task.date)]]</strong> <div style="height: 300px;max-height: 300px;overflow-y: scroll;" ng-bind-html="formatHtml(task.details)"></div>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <h3 class="panel-title">Reportes de seguimiento:</h3>
+    </div>
+    <div class="panel-body">
+        <ul class="list-group">
+            <li class="list-group-item" data-ng-repeat="report in referee.profile.reports">
+                <div class="media">
+                    <div class="media-body">
+                        <strong>[[referee.formatDate(report.date)]]</strong>
+                        <p>[[report.details]]</p>
+                    </div>
+                    <div class="media-right">
+                        <h3><span ng-class="{'label-primary': [[report.concept === 'Excelente']],
+                                                'label-success': [[report.concept === 'Bueno']],
+                                                'label-info': [[report.concept === 'Regular']],
+                                                'label-warning': [[report.concept === 'Insuficiente']],
+                                                'label-danger': [[report.concept === 'Deficiente']]}" class="label">[[report.concept]]</span></h3>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+
+{% endblock %}
